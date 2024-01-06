@@ -23,9 +23,9 @@
    WiFiUDP udp;  // Assuming you have a Wifi UDP object defined
    // or
    ethernetUDP udp;  // Assuming you have an Ethernet UDP object defined
-   localBroadcast broadcast(&udp);  // Default port is 12345 and maxPacketSize is 255
+   localBroadcast broadcast(&udp);  // Default port is 12345 and maxPacketSize to receive is 255
     // or
-    localBroadcast broadcast(&udp, 4210, 512);  // Custom port and maxPacketSize
+    localBroadcast broadcast(&udp, 4210, 512);  // Custom port and maxPacketSize to receive
    ```
 
 **3. Start listening for messages:**
@@ -57,3 +57,10 @@
    char message[] = "Hello, network!";
    broadcast.send(message, sizeof(message));
    ```
+
+**Additional notes:**
+
+- The `handleReceivedData` function is called when a message is received. The function takes two arguments: a pointer to the received data and the length of the received data.
+- The `send` function takes two arguments: a pointer to the data to send and the length of the data to send.
+- The `loop` function takes one argument: a pointer to the function to call when a message is received.
+- The `maxPacketSize` argument in the `localBroadcast` constructor is the maximum size of the packet to receive. If the received packet is larger than this size, the `handleReceivedData` function will not be called and the `loop` function will return 1.
