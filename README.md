@@ -1,4 +1,4 @@
- **# localBroadcast library for Arduino**
+# localBroadcast library for Arduino
 
 **Easily send and receive broadcast messages on your local network with this Arduino library.**
 
