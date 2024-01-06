@@ -23,6 +23,7 @@
    WiFiUDP udp;  // Assuming you have a Wifi UDP object defined
    // or
    ethernetUDP udp;  // Assuming you have an Ethernet UDP object defined
+   
    localBroadcast broadcast(&udp);  // Default port is 12345 and maxPacketSize to receive is 255
     // or
     localBroadcast broadcast(&udp, 4210, 512);  // Custom port and maxPacketSize to receive
@@ -44,8 +45,13 @@
    }
 
    void loop() {
-       broadcast.loop(handleReceivedData); // Call the loop function if a message is received
-       //  returns 1 if the received packet size is greater than maxPacketSize and 0 if not
+      uint8_t error = broadcast.loop(handleReceivedData); // Call the loop function if a message is received
+      // Error handling
+      if (error == 1) {
+         Serial.println("Packet too large to receive");
+      } else if (error == 2) {
+         Serial.println("Error on allocating memory for packet, not enough memory");
+      }
 
        // ... other code
    }
@@ -64,3 +70,4 @@
 - The `send` function takes two arguments: a pointer to the data to send and the length of the data to send.
 - The `loop` function takes one argument: a pointer to the function to call when a message is received.
 - The `maxPacketSize` argument in the `localBroadcast` constructor is the maximum size of the packet to receive. If the received packet is larger than this size, the `handleReceivedData` function will not be called and the `loop` function will return 1.
+- The `loop` function returns 0 if no message is received, 1 if the received packet is larger than the `maxPacketSize` argument in the `localBroadcast` constructor and 2 if there is an error on allocating memory for the packet to receive.

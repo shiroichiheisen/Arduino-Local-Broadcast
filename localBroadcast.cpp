@@ -14,22 +14,26 @@ void localBroadcast::begin()
 
 uint8_t localBroadcast::loop(void (*receivedInterruptFunction)(char *receivedData, uint16_t receivedDataLength))
 {
-    int packetSize = Udp->parsePacket();
-    if (packetSize)
-    {
-        if (packetSize + 1 > packetSizeLimit)
-            return 1; // Error: Packet size is bigger than packet size limit
+    uint32_t packetSize = Udp->parsePacket();
+    if (!packetSize)
+        return 0; // No packet received
 
-        char *incomingPacket = (char *)malloc(packetSize + 1);
+    if (packetSize + 1 > packetSizeLimit)
+        return 1; // Error: Packet size is bigger than packet size limit
 
-        int len = Udp->read(incomingPacket, packetSize);
-        if (len > 0)
-            incomingPacket[len] = 0;
+    char *incomingPacket = (char *)malloc(packetSize + 1);
 
-        receivedInterruptFunction(incomingPacket, packetSize);
+    if (incomingPacket == NULL)
+        return 2; // Error: Memory allocation failed
 
-        free(incomingPacket);
-    }
+    uint16_t len = Udp->read(incomingPacket, packetSize);
+    if (len > 0)
+        incomingPacket[len] = 0;
+
+    receivedInterruptFunction(incomingPacket, packetSize);
+
+    free(incomingPacket);
+
     return 0; // No error
 }
 
