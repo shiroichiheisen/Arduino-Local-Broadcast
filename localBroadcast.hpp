@@ -2,8 +2,6 @@
 #define localBroadcast_h
 
 #include <Arduino.h>
-#include <WiFi.h>
-#include <WiFiUdp.h>
 
 class localBroadcast
 {
