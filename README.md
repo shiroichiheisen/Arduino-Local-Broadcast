@@ -45,7 +45,8 @@
    }
 
    void loop() {
-      uint8_t error = broadcast.loop(handleReceivedData); // Call the loop function if a message is received
+      broadcast.setLoopFunction(handleReceivedData); // Set the function to call when a message is received, this is not mandatory if you have already set it with the loop function
+      uint8_t error = broadcast.loop(handleReceivedData); // Call the loop function if a message is received, the function to call is not mandatory if you have already set it with setLoopFunction
       // Error handling
       if (error == 1) {
          Serial.println("Packet too large to receive");

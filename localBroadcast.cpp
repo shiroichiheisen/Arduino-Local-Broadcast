@@ -12,8 +12,19 @@ void localBroadcast::begin()
     this->Udp->begin(this->localPort);
 }
 
+void localBroadcast::setLoopFunction(void (*receivedInterruptFunction)(char *receivedData, uint16_t receivedDataLength))
+{
+    this->receivedInterruptFunction = receivedInterruptFunction;
+}
+
 uint8_t localBroadcast::loop(void (*receivedInterruptFunction)(char *receivedData, uint16_t receivedDataLength))
 {
+    if (receivedInterruptFunction != nullptr)
+        this->receivedInterruptFunction = receivedInterruptFunction;
+
+    if (this->receivedInterruptFunction == nullptr)
+        return 3; // Error: No interrupt function set
+
     uint32_t packetSize = Udp->parsePacket();
     if (!packetSize)
         return 0; // No packet received
@@ -30,7 +41,7 @@ uint8_t localBroadcast::loop(void (*receivedInterruptFunction)(char *receivedDat
     if (len > 0)
         incomingPacket[len] = 0;
 
-    receivedInterruptFunction(incomingPacket, packetSize);
+    this->receivedInterruptFunction(incomingPacket, packetSize);
 
     free(incomingPacket);
 
