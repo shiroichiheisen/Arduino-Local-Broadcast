@@ -32,6 +32,7 @@
 **3. Start listening for messages:**
 
    ```c++
+   broadcast.changeOwnIp(IPAddress(192, 168, 0, 102)); // To not receive own messages, set the IP address of the device
    broadcast.begin();
    ```
 

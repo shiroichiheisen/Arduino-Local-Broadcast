@@ -1,15 +1,21 @@
 #include "localBroadcast.hpp"
 
-localBroadcast::localBroadcast(UDP *udp, uint16_t port, uint16_t maxPacketSize)
+localBroadcast::localBroadcast(UDP *udp, uint16_t port, uint16_t maxPacketSize, IPAddress ownIpAdress)
 {
     this->localPort = port;
     this->Udp = udp;
     this->packetSizeLimit = maxPacketSize;
+    this->ownIp = ownIpAdress;
 }
 
 void localBroadcast::begin()
 {
     this->Udp->begin(this->localPort);
+}
+
+void localBroadcast::changeOwnIp(IPAddress ownIpAdress)
+{
+    this->ownIp = ownIpAdress;
 }
 
 void localBroadcast::setLoopFunction(void (*receivedInterruptFunction)(char *receivedData, uint16_t receivedDataLength))
@@ -27,6 +33,9 @@ uint8_t localBroadcast::loop(void (*receivedInterruptFunction)(char *receivedDat
 
     uint32_t packetSize = Udp->parsePacket();
     if (!packetSize)
+        return 0; // No packet received
+
+    if (Udp->remoteIP() == ownIp)
         return 0; // No packet received
 
     if (packetSize + 1 > packetSizeLimit)
